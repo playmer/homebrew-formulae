@@ -1,9 +1,9 @@
 class Findsimulator < Formula
   desc "Compute 'destination' for xcodebuild command line tool to build Xcode projects."
   homepage "https://github.com/a7ex/findsimulator"
-  version "0.2.0"
-  url "https://github.com/a7ex/findsimulator/archive/0.2.tar.gz"
-  sha256 "2b46c4c0a396ff549090ccf944ee51553904ed006f100f103ab60515f214b8bb"
+  version "0.3.0"
+  url "https://github.com/a7ex/findsimulator/archive/0.3.tar.gz"
+  sha256 "9389387a20173180d1e91cc8e1edeebea48438aeff6df04ab0714b9b86a414be"
   license "MIT"
 
   depends_on xcode: ["10.0", :build]
@@ -13,7 +13,7 @@ class Findsimulator < Formula
   end
 
   test do
-    assert_match "0.2", shell_output("#{bin}/findsimulator -v")
+    assert_match "0.3", shell_output("#{bin}/findsimulator -v")
   end
 
 end
