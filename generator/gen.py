@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import urllib.request
+from pathlib import Path
 
 def sha256sum(filename):
     with open(filename, 'rb', buffering=0) as f:
@@ -10,7 +11,7 @@ def sha256sum(filename):
 url = 'https://api.github.com/repos/a7ex/xcresultparser/releases'
 
 def generate_text(version, sha256):
-    return f'''class Xcresultparser@{version} < Formula
+    return f'''class XcresultparserAT{version} < Formula
   desc "Parse .xcresult files and print summary in different formats"
   homepage "https://github.com/a7ex/xcresultparser"
   version "{version}"
@@ -38,13 +39,16 @@ end'''
 response = urllib.request.urlopen(url).read()
 response_object = json.loads(response)
 
+download_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'downloads')
+Path(download_dir).mkdir(parents=True, exist_ok=True)
+
 for release in response_object:
     if (release['prerelease']):
         continue
 
     print(f'Tag: {release['tag_name']}')
     version = release['tag_name']
-    filename = f'{version}.tar.gz'
+    filename = os.path.join(download_dir, f'{version}.tar.gz')
     file_url = f'https://github.com/a7ex/xcresultparser/archive/{release['tag_name']}.tar.gz'
     print(f'\tfile_url: {file_url}')
     urllib.request.urlretrieve(file_url, filename)
