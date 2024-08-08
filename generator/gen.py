@@ -11,7 +11,7 @@ def sha256sum(filename):
 url = 'https://api.github.com/repos/a7ex/xcresultparser/releases'
 
 def generate_text(version, sha256):
-    return f'''class XcresultparserAT{version} < Formula
+    return f'''class XcresultparserAT{version.replace(".", "")} < Formula
   desc "Parse .xcresult files and print summary in different formats"
   homepage "https://github.com/a7ex/xcresultparser"
   version "{version}"

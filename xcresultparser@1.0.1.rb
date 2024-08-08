@@ -1,4 +1,4 @@
-class XcresultparserAT1.0.1 < Formula
+class XcresultparserAT101 < Formula
   desc "Parse .xcresult files and print summary in different formats"
   homepage "https://github.com/a7ex/xcresultparser"
   version "1.0.1"
