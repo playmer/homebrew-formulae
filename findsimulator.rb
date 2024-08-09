@@ -11,9 +11,10 @@ class Findsimulator < Formula
   def install
     system "make", "install", "prefix=#{prefix}"
   end
-
+  
   test do
-    assert_match "0.3", shell_output("#{bin}/findsimulator -v")
+    output = shell_output("#{bin}/findsimulator -h")
+    assert output.start_with?("OVERVIEW: Interface to simctl in order to get suitable strings for destinations for the xcodebuild command."), "Expected output to start with 'OVERVIEW: Interface to simctl in order to get suitable strings for destinations for the xcodebuild command.', but got: #{output}"
   end
 
 end
