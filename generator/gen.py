@@ -9,7 +9,7 @@ def sha256sum(filename):
         return hashlib.file_digest(f, 'sha256').hexdigest()
 
 
-def generate_text(user, repo, description, version, sha256, assert_string, command, is_latest_version):
+def generate_text(user, repo, description, version, sha256, testing_section, is_latest_version):
     class_name = f'{repo.capitalize()}AT{version.replace(".", "")}'
 
     if (is_latest_version):
@@ -29,9 +29,7 @@ def generate_text(user, repo, description, version, sha256, assert_string, comma
     system "make", "install", "prefix=#{{prefix}}"
   end
 
-  test do
-    assert_match "{assert_string}", shell_output("{command}")
-  end
+{testing_section}
 
 end
 '''
@@ -72,7 +70,7 @@ def generate_version_list(url):
 
   return latest_minor_versions
 
-def generate_formulae(user, repo, description, assert_string, command):
+def generate_formulae(user, repo, description, testing_section):
   base_dir = os.path.abspath(os.path.dirname(__file__))
   download_dir = os.path.join(base_dir, 'downloads')
   Path(download_dir).mkdir(parents=True, exist_ok=True)
@@ -92,14 +90,6 @@ def generate_formulae(user, repo, description, assert_string, command):
       if os.path.isfile(version_file_path):
           continue
 
-      # Undeniably a bit of a hack to generate version strings for findsimulator
-      # but not sure how else to best match behavior here.
-      if assert_string is None:
-          numbers = version.split('.')
-          if len(numbers) == 3:
-              numbers = numbers[:-1]
-          assert_string = '.'.join(numbers)
-
       filename = os.path.join(download_dir, f'{version}.tar.gz')
       file_url = f'https://github.com/{user}/{repo}/archive/{release['tag_name']}.tar.gz'
       print(f'\tfile_url: {file_url}')
@@ -108,34 +98,38 @@ def generate_formulae(user, repo, description, assert_string, command):
       print(f'\tSHA256: {sha256}')
 
       with open(version_file_path, "w") as text_file:
-          text_file.write(generate_text(user, repo, description, version, sha256, assert_string, command, False))
+          text_file.write(generate_text(user, repo, description, version, sha256, testing_section, False))
 
       if (is_latest_version):
           is_latest_version = False
 
           with open(os.path.join(base_dir, f'../{repo.lower()}.rb'), "w") as text_file:
-              text_file.write(generate_text(user, repo, description, version, sha256, assert_string, command, True))
+              text_file.write(generate_text(user, repo, description, version, sha256, testing_section, True))
 
 generate_formulae(
     'a7ex', 
-    'findsimulator', 
+    'findsimulator',
     "Compute 'destination' for xcodebuild command line tool to build Xcode projects.",
-    None,
-    '#{bin}/findsimulator -v'
+    '''  test do
+    output = shell_output("#{bin}/findsimulator -h")
+    assert output.start_with?("OVERVIEW: Interface to simctl in order to get suitable strings for destinations for the xcodebuild command."), "Expected output to start with 'OVERVIEW: Interface to simctl in order to get suitable strings for destinations for the xcodebuild command.', but got: #{output}"
+  end'''
     )
 
 generate_formulae(
     'a7ex', 
-    'SBEnumerator', 
+    'SBEnumerator',
     'Parse Xcode Interface Builder files and create enums for cell identifiers and accessibility identifiers',
-    "Error: Argument error. No Interface Builder file was provided. Use --help for a usage description.",
-    '#{bin}/sbenumerator'
+    '''  test do
+    assert_match "Error: Argument error. No Interface Builder file was provided. Use --help for a usage description.", shell_output("#{bin}/sbenumerator")
+  end'''
     )
 
 generate_formulae(
     'a7ex', 
-    'xcresultparser', 
+    'xcresultparser',
     'Parse .xcresult files and print summary in different formats',
-    "Missing expected argument '<xcresult-file>'",
-    '#{bin}/xcresultparser -o txt'
+    '''  test do
+    assert_match "Missing expected argument '<xcresult-file>'", shell_output("#{bin}/xcresultparser -o txt")
+  end'''
     )

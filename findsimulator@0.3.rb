@@ -1,4 +1,4 @@
-class Findsimulator < Formula
+class FindsimulatorAT03 < Formula
   desc "Compute 'destination' for xcodebuild command line tool to build Xcode projects."
   homepage "https://github.com/a7ex/findsimulator"
   version "0.3"
