@@ -15,10 +15,16 @@ def generate_text(user, repo, description, version, sha256, testing_section, is_
     if (is_latest_version):
         class_name = repo.capitalize()
 
+    semver = version
+
+    version_len = len(version.split('.'))
+    if (version_len != 3):
+        semver = semver + ('.0' * (3 - version_len))
+
     return f'''class {class_name} < Formula
   desc "{description}"
   homepage "https://github.com/{user}/{repo}"
-  version "{version}"
+  version "{semver}"
   url "https://github.com/{user}/{repo}/archive/{version}.tar.gz"
   sha256 "{sha256}"
   license "MIT"
